@@ -1,1 +1,19 @@
 // TODO
+.HeadingContainer {
+  height: 6.653rem;
+}
+
+.HeadingContent {
+  max-width: 1120px;
+  padding: 2.5rem 13.125rem;
+
+  img {
+    margin-right: auto;
+    cursor: pointer;
+    transition: filter 0.2s;
+
+    &:hover {
+      filter: opacity(0.9);
+    }
+  }
+}
