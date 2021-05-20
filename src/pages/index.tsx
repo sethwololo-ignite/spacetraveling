@@ -35,31 +35,33 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
         <title>Posts | spacetravelling</title>
       </Head>
 
-      <main className={`${commonStyles.common}`}>
-        <header>
-          <img src="/images/logo.svg" alt="logo" />
-        </header>
+      <main className={commonStyles.container}>
+        <div className={styles.posts}>
+          <header>
+            <img src="/images/logo.svg" alt="logo" />
+          </header>
 
-        {postsPagination.results.map(post => (
-          <Link key={post.uid} href={`/post/${post.uid}`}>
-            <a className={styles.post}>
-              <h1>{post.data.title}</h1>
-              <p>{post.data.subtitle}</p>
-              <div>
+          {postsPagination.results.map(post => (
+            <Link key={post.uid} href={`/post/${post.uid}`}>
+              <a className={styles.post}>
+                <h1>{post.data.title}</h1>
+                <p>{post.data.subtitle}</p>
                 <div>
-                  <FiCalendar size={20} />
-                  <time>{post.first_publication_date}</time>
+                  <div>
+                    <FiCalendar size={20} />
+                    <time>{post.first_publication_date}</time>
+                  </div>
+                  <div>
+                    <FiUser size={20} />
+                    <span>{post.data.author}</span>
+                  </div>
                 </div>
-                <div>
-                  <FiUser size={20} />
-                  <span>{post.data.author}</span>
-                </div>
-              </div>
-            </a>
-          </Link>
-        ))}
+              </a>
+            </Link>
+          ))}
 
-        <button type="button">Carregar mais posts</button>
+          <button type="button">Carregar mais posts</button>
+        </div>
       </main>
     </>
   );
@@ -71,7 +73,7 @@ export const getStaticProps: GetStaticProps = async () => {
     Prismic.predicates.at('document.type', 'posts'),
     {
       fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
-      pageSize: 4,
+      pageSize: 2,
     }
   );
 
