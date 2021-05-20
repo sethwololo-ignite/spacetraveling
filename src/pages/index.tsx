@@ -1,11 +1,13 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import Prismic from '@prismicio/client';
 import { getPrismicClient } from '../services/prismic';
 
-// import commonStyles from '../styles/common.module.scss';
+import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+import { formatDate } from '../util/format';
 
 interface Post {
   uid?: string;
@@ -27,33 +29,34 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
-  console.log(postsPagination);
   return (
     <>
       <Head>
         <title>Posts | spacetravelling</title>
       </Head>
 
-      <main className={styles.container}>
+      <main className={`${commonStyles.common}`}>
         <header>
           <img src="/images/logo.svg" alt="logo" />
         </header>
 
         {postsPagination.results.map(post => (
-          <a href="/" className={styles.post} key={post.uid}>
-            <h1>{post.data.title}</h1>
-            <p>{post.data.subtitle}</p>
-            <div>
+          <Link key={post.uid} href={`/post/${post.uid}`}>
+            <a className={styles.post}>
+              <h1>{post.data.title}</h1>
+              <p>{post.data.subtitle}</p>
               <div>
-                <FiCalendar size={20} />
-                <time>{post.first_publication_date}</time>
+                <div>
+                  <FiCalendar size={20} />
+                  <time>{post.first_publication_date}</time>
+                </div>
+                <div>
+                  <FiUser size={20} />
+                  <span>{post.data.author}</span>
+                </div>
               </div>
-              <div>
-                <FiUser size={20} />
-                <span>{post.data.author}</span>
-              </div>
-            </div>
-          </a>
+            </a>
+          </Link>
         ))}
 
         <button type="button">Carregar mais posts</button>
@@ -72,9 +75,19 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   );
 
+  const formattedResults = postsResponse.results.map(post => {
+    return {
+      ...post,
+      first_publication_date: formatDate(post.first_publication_date),
+    };
+  });
+
   return {
     props: {
-      postsPagination: postsResponse,
+      postsPagination: {
+        next_page: postsResponse.next_page,
+        results: formattedResults,
+      },
     },
   };
 };
