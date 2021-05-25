@@ -1,5 +1,67 @@
 // TODO
-
 .banner {
-  max-height: 400px;
+  height: 400px;
+  position: relative;
+}
+
+.container {
+  max-width: 700px;
+}
+
+.titleSection {
+  margin-top: 5rem;
+  margin-bottom: 4rem;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    small {
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      color: var(--small);
+
+      svg {
+        margin-right: 0.5rem;
+      }
+
+      & + small {
+        margin-left: 1.5rem;
+      }
+    }
+  }
+}
+
+.contentSection {
+  > h2 {
+    font-size: 2.25rem;
+    line-height: 3.15rem;
+  }
+
+  div {
+    p {
+      font-size: 1.125rem;
+      line-height: 1.594rem;
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--highlight);
+    }
+  }
+
+  & + section {
+    margin-top: 4rem;
+  }
+
+  &:last-of-type {
+    margin-bottom: 5rem;
+  }
 }

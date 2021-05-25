@@ -2,6 +2,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { RichText } from 'prismic-dom';
 
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
@@ -19,10 +20,6 @@ interface Post {
     title: string;
     banner: {
       url: string;
-      dimensions: {
-        width: number;
-        height: number;
-      };
     };
     author: string;
     content: {
@@ -39,43 +36,61 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps): JSX.Element {
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Carregando...</div>;
+  }
+
+  const teste = post.data.content;
+
   return (
     <>
       <Head>
         <title>{`${post.data.title} | spacetraveling`}</title>
       </Head>
 
-      <main>
-        <Header />
-
+      <Header />
+      <div className={styles.banner}>
         <Image
           src={post.data.banner.url}
           alt="Imagem"
-          height={post.data.banner.dimensions.height}
-          width={post.data.banner.dimensions.width}
-          className={styles.banner}
+          layout="fill"
+          objectFit="cover"
         />
+      </div>
 
-        <article className={commonStyles.container}>
-          <section>
+      <main className={commonStyles.container}>
+        <article className={styles.article}>
+          <section className={styles.titleSection}>
             <h1>{post.data.title}</h1>
             <div>
-              <div>
-                <FiCalendar />
-                <time>{post.first_publication_date}</time>
-              </div>
-              <div>
-                <FiUser />
-                <time>{post.data.author}</time>
-              </div>
-              <div>
-                <FiClock />
-                <time>4 min</time>
-              </div>
+              <small>
+                <FiCalendar size={20} /> {post.first_publication_date}
+              </small>
+
+              <small>
+                <FiUser size={20} /> {post.data.author}
+              </small>
+
+              <small>
+                <FiClock size={20} /> 4 min
+              </small>
             </div>
           </section>
 
-          <div className={styles.article} />
+          {post.data.content.map(group => {
+            return (
+              <section className={styles.contentSection}>
+                <h2>{group.heading}</h2>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: RichText.asHtml(group.body),
+                  }}
+                />
+              </section>
+            );
+          })}
         </article>
       </main>
     </>
@@ -83,7 +98,7 @@ export default function Post({ post }: PostProps): JSX.Element {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const prismic = getPrismicClient();
+  // const prismic = getPrismicClient();
   // const posts = await prismic.query(TODO);
 
   // TODO
@@ -98,8 +113,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const prismic = getPrismicClient();
   const response = await prismic.getByUID('posts', String(slug), {});
-
-  // const parsedContent = response.data.content.map()
 
   const post = {
     first_publication_date: formatDate(response.first_publication_date),

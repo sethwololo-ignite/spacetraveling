@@ -1,11 +1,17 @@
 // TODO
 .HeadingContainer {
   height: 6.653rem;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .HeadingContent {
   max-width: 1120px;
-  padding: 2.5rem 13.125rem;
+  width: 100%;
+
+  padding: 0 1rem;
 
   img {
     margin-right: auto;
