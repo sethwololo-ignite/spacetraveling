@@ -49,7 +49,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
                 <div>
                   <div>
                     <FiCalendar size={20} />
-                    <time>{post.first_publication_date}</time>
+                    <time>{formatDate(post.first_publication_date)}</time>
                   </div>
                   <div>
                     <FiUser size={20} />
@@ -77,18 +77,18 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   );
 
-  const formattedResults = postsResponse.results.map(post => {
-    return {
-      ...post,
-      first_publication_date: formatDate(post.first_publication_date),
-    };
-  });
+  // const formattedResults = postsResponse.results.map(post => {
+  //   return {
+  //     ...post,
+  //     first_publication_date: formatDate(post.first_publication_date),
+  //   };
+  // });
 
   return {
     props: {
       postsPagination: {
         next_page: postsResponse.next_page,
-        results: formattedResults,
+        results: postsResponse.results,
       },
     },
   };

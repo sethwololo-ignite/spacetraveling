@@ -42,8 +42,6 @@ export default function Post({ post }: PostProps): JSX.Element {
     return <div>Carregando...</div>;
   }
 
-  const teste = post.data.content;
-
   return (
     <>
       <Head>
@@ -66,7 +64,8 @@ export default function Post({ post }: PostProps): JSX.Element {
             <h1>{post.data.title}</h1>
             <div>
               <small>
-                <FiCalendar size={20} /> {post.first_publication_date}
+                <FiCalendar size={20} />{' '}
+                {formatDate(post.first_publication_date)}
               </small>
 
               <small>
@@ -115,7 +114,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await prismic.getByUID('posts', String(slug), {});
 
   const post = {
-    first_publication_date: formatDate(response.first_publication_date),
+    first_publication_date: response.first_publication_date,
     data: response.data,
   };
 
