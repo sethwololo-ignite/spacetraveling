@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import Prismic from '@prismicio/client';
+import { useState } from 'react';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -29,6 +30,29 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
+  function formatPosts(posts: Post[]): Post[] {
+    return posts.map(post => ({
+      ...post,
+      first_publication_date: formatDate(post.first_publication_date),
+    }));
+  }
+
+  const [posts, setPosts] = useState<Post[]>(
+    formatPosts(postsPagination.results)
+  );
+  const [nextPage, setNextPage] = useState(postsPagination.next_page);
+
+  async function fetchMorePosts(): Promise<void> {
+    if (!nextPage) {
+      return;
+    }
+
+    const response = await (await fetch(nextPage)).json();
+    const formattedPosts = formatPosts(response.results);
+    setPosts([...posts, ...formattedPosts]);
+    setNextPage(response.next_page);
+  }
+
   return (
     <>
       <Head>
@@ -41,7 +65,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
             <img src="/images/logo.svg" alt="logo" />
           </header>
 
-          {postsPagination.results.map(post => (
+          {posts.map(post => (
             <Link key={post.uid} href={`/post/${post.uid}`}>
               <a className={styles.post}>
                 <h1>{post.data.title}</h1>
@@ -49,7 +73,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
                 <div>
                   <div>
                     <FiCalendar size={20} />
-                    <time>{formatDate(post.first_publication_date)}</time>
+                    <time>{post.first_publication_date}</time>
                   </div>
                   <div>
                     <FiUser size={20} />
@@ -60,7 +84,11 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
             </Link>
           ))}
 
-          <button type="button">Carregar mais posts</button>
+          {nextPage && (
+            <button type="button" onClick={fetchMorePosts}>
+              Carregar mais posts
+            </button>
+          )}
         </div>
       </main>
     </>
@@ -76,13 +104,6 @@ export const getStaticProps: GetStaticProps = async () => {
       pageSize: 2,
     }
   );
-
-  // const formattedResults = postsResponse.results.map(post => {
-  //   return {
-  //     ...post,
-  //     first_publication_date: formatDate(post.first_publication_date),
-  //   };
-  // });
 
   return {
     props: {
